@@ -48,3 +48,14 @@ export async function createCity(newCity) {
     return err;
   }
 }
+
+export async function deleteCity(id) {
+  try {
+    const resp = await clientBaseUrl.delete(
+      `${clientEndPoints.getCities}/${id}`
+    );
+    return resp;
+  } catch (err) {
+    return err;
+  }
+}

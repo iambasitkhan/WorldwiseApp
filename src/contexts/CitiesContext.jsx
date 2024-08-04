@@ -5,6 +5,7 @@ import {
   getCities as getCitiesApi,
   getCity as getCityApi,
   createCity as createCityApi,
+  deleteCity as deleteCityApi,
 } from "../services/citiesApi";
 
 const CitiesContext = createContext();
@@ -29,6 +30,14 @@ const reducer = function (state, action) {
     case "city/created":
       const cities = [...state.cities, action.payload];
       return { ...state, isLoading: false, cities };
+
+    case "city/deleted":
+      //Payload: city ID
+      return {
+        ...state,
+        isLoading: false,
+        cities: state.cities.filter((city) => city.id !== action.payload),
+      };
     default:
       throw new Error("Unknown Action");
   }
@@ -71,9 +80,24 @@ function CitiesProvider({ children }) {
     }
   }
 
+  async function deleteCity(id) {
+    dispatch({ type: "loading" });
+    const resp = await deleteCityApi(id);
+    if (resp.status >= 200 && resp.status < 300) {
+      dispatch({ type: "city/deleted", payload: id });
+    }
+  }
+
   return (
     <CitiesContext.Provider
-      value={{ currentCity, cities, getCity, createCity, isLoading }}
+      value={{
+        currentCity,
+        cities,
+        getCity,
+        createCity,
+        deleteCity,
+        isLoading,
+      }}
     >
       {children}
     </CitiesContext.Provider>
