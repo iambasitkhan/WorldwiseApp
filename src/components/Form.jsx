@@ -26,25 +26,38 @@ function Form() {
   const [notes, setNotes] = useState("");
   const [emoji, setEmoji] = useState("");
   const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
+  const [geoCodingError, setGeoCodingError] = useState("");
 
   useEffect(() => {
     async function fetCityData() {
-      setIsLoadingGeocoding(true);
-      const resp = await getCityData(lat, lng);
-      if (resp.status >= 200 && resp.status < 300) {
-        console.log(resp.data);
-        const { city, countryCode, countryName } = resp.data;
-        setCityName(city);
-        setCountry(countryCode);
-        setEmoji(convertToEmoji(countryCode));
+      try {
+        setIsLoadingGeocoding(true);
+        const resp = await getCityData(lat, lng);
+        if (resp.status >= 200 && resp.status < 300) {
+          console.log(resp.data);
+          const { city, countryCode, countryName } = resp.data;
+
+          if (!countryCode)
+            throw new Error(
+              "That doesn`t seem to be like city, click somewher else"
+            );
+          setCityName(city);
+          setCountry(countryCode);
+          setEmoji(convertToEmoji(countryCode));
+        }
+        if (resp.err) toast.error(resp.err.message);
+      } catch (err) {
+        setGeoCodingError(err.message);
+      } finally {
+        setIsLoadingGeocoding(false);
       }
-      if (resp.err) toast.error(resp.err.message);
-      setIsLoadingGeocoding(false);
     }
     if ((lat, lng)) fetCityData();
   }, [lat, lng]);
 
   if (isLoadingGeocoding) return <Spinner />;
+
+  if (geoCodingError) <Message message={geoCodingError} />;
 
   return (
     <form className={styles.form}>
