@@ -24,7 +24,6 @@ export async function getCity(id) {
 }
 
 export async function getCityData(lat, lng) {
-  console.log("LATLNG", lat, lng);
   try {
     const resp = await clientGeoCodingBaseUrl.get(
       `${clientEndPoints.getGeoCoding}?latitude=${lat}&longitude=${lng}}`
@@ -33,5 +32,19 @@ export async function getCityData(lat, lng) {
   } catch (error) {
     return { err: error.message || "" };
     console.log(error);
+  }
+}
+
+export async function createCity(newCity) {
+  try {
+    const resp = await clientBaseUrl.post(
+      `${clientEndPoints.getCities}`,
+      newCity,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    return resp;
+  } catch (err) {
+    return err;
   }
 }

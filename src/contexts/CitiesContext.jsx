@@ -4,6 +4,7 @@ import { useState, useEffect, createContext } from "react";
 import {
   getCities as getCitiesApi,
   getCity as getCityApi,
+  createCity as createCityApi,
 } from "../services/citiesApi";
 
 const CitiesContext = createContext();
@@ -25,6 +26,9 @@ const reducer = function (state, action) {
     case "city/loaded":
       return { ...state, isLoading: false, currentCity: action.payload };
 
+    case "city/created":
+      const cities = [...state.cities, action.payload];
+      return { ...state, isLoading: false, cities };
     default:
       throw new Error("Unknown Action");
   }
@@ -55,8 +59,22 @@ function CitiesProvider({ children }) {
     }
   }
 
+  async function createCity(newCity) {
+    dispatch({ type: "loading" });
+    try {
+      const resp = await createCityApi(newCity);
+      if (resp.status >= 200 && resp.status < 300) {
+        dispatch({ type: "city/created", payload: resp.data });
+      }
+    } catch (err) {
+      return err;
+    }
+  }
+
   return (
-    <CitiesContext.Provider value={{ currentCity, cities, getCity, isLoading }}>
+    <CitiesContext.Provider
+      value={{ currentCity, cities, getCity, createCity, isLoading }}
+    >
       {children}
     </CitiesContext.Provider>
   );
