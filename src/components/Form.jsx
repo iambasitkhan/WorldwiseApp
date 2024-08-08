@@ -41,15 +41,13 @@ function Form() {
         setIsLoadingGeocoding(true);
         const resp = await getCityData(lat, lng);
         if (resp.status >= 200 && resp.status < 300) {
-          console.log(resp.data);
           const { city, countryCode, countryName } = resp.data;
-
           if (!countryCode)
             throw new Error(
               "That doesn`t seem to be like city, click somewher else"
             );
           setCityName(city);
-          setCountry(countryCode);
+          setCountry(countryName);
           setEmoji(convertToEmoji(countryCode));
         }
         if (resp.err) toast.error(resp.err.message);

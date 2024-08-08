@@ -28,13 +28,14 @@ function City() {
   const { id } = useParams();
   const { isLoading, getCity, currentCity } = useCities();
 
-  const { cityName, emoji, date, notes } = currentCity;
+  const { cityName, emoji, date, notes, id: currentCityId } = currentCity;
 
   useEffect(function () {
     async function getCityData() {
       await getCity(id);
     }
 
+    if (id === currentCityId) return;
     getCityData();
   }, []);
 
