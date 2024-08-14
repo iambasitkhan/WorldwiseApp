@@ -4,10 +4,10 @@ import AppRoutes from "./Routes";
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CitiesProvider>
+    <CitiesProvider>
+      <AuthProvider>
         <AppRoutes />
-      </CitiesProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </CitiesProvider>
   );
 }
